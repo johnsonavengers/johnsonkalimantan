@@ -1,0 +1,15 @@
+{
+  "campaign": {
+    "name": "JOHNSON UNTUK KALIMANTAN",
+    "status": "active",
+    "donationRate": 0.1,
+    "startDate": "2026-09-01",
+    "endDate": "2026-09-30",
+    "donationTarget": null,
+    "currency": "IDR",
+    "shopUrl": "",
+    "lastUpdated": null
+  },
+  "daily": [],
+  "disbursements": []
+}
