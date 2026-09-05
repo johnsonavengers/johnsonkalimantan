@@ -1,6 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import johnsonLogo from "../logo/logo.jpg";
+
+function BrandLogo() {
+  return <Image className="brand-logo" src={johnsonLogo} alt="Logo Johnson" width={52} height={52} sizes="52px" />;
+}
 
 type DailyRecord = { date: string; sales: number; orders: number };
 type Disbursement = {
@@ -67,7 +73,7 @@ function LoadingState() {
   return (
     <main className="state-page" aria-live="polite">
       <div className="state-card">
-        <span className="brand-mark">J</span>
+        <BrandLogo />
         <p className="eyebrow"><span>PUBLIC</span> TRANSPARENCY DASHBOARD</p>
         <h1 className="state-title">Menyiapkan<br />catatan publik.</h1>
         <div className="loading-line" />
@@ -80,7 +86,7 @@ function ErrorState() {
   return (
     <main className="state-page" role="alert">
       <div className="state-card error-card">
-        <span className="brand-mark">J</span>
+        <BrandLogo />
         <p className="eyebrow"><span>STATUS</span> DATA</p>
         <h1 className="state-title">Data campaign sedang tidak tersedia.</h1>
         <p>Silakan kembali beberapa saat lagi.</p>
@@ -148,7 +154,7 @@ export default function Dashboard() {
       <header className="site-header">
         <nav className="nav-shell" aria-label="Navigasi utama">
           <a className="brand" href="#top" aria-label="JOHNSON UNTUK KALIMANTAN — kembali ke atas">
-            <span className="brand-mark">J</span>
+            <BrandLogo />
             <span>JOHNSON <b>UNTUK KALIMANTAN</b></span>
           </a>
           <div className="nav-links">
@@ -177,6 +183,7 @@ export default function Dashboard() {
             </div>
             <strong>{rupiah.format(metrics.totalDonation)}</strong>
             <div className="growing"><span>AND GROWING.</span><span className="arrow">↗</span></div>
+            <div className="campaign-map"><Image src="/indonesia-map.svg" alt="Peta Indonesia dengan wilayah Kalimantan disorot oranye" width={780} height={300} unoptimized /><span>KALIMANTAN, INDONESIA</span></div>
             <div className="total-meta">
               <span><b>{integer.format(metrics.totalOrders)}</b> order berkontribusi</span>
               <span><b>{metrics.campaignDay ? `${String(metrics.campaignDay).padStart(2, "0")} / ${metrics.totalDays}` : "—"}</b> campaign day</span>
@@ -394,7 +401,7 @@ export default function Dashboard() {
 
       <footer>
         <div className="section-shell footer-inner">
-          <a className="brand footer-brand" href="#top"><span className="brand-mark inverse">J</span><span>JOHNSON <b>UNTUK KALIMANTAN</b></span></a>
+          <a className="brand footer-brand" href="#top"><BrandLogo /><span>JOHNSON <b>UNTUK KALIMANTAN</b></span></a>
           <p>10% dari penjualan campaign Johnson.<br />Untuk Kalimantan.</p>
           <div><span>Last updated</span><b>{displayUpdate(data.campaign.lastUpdated)}</b></div>
           <a href="#top" aria-label="Kembali ke atas">Kembali ke atas ↑</a>
