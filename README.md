@@ -124,7 +124,11 @@ Jangan commit kata sandi, token, atau data privat. Versi ini tidak membutuhkan A
 
 ## Deployment
 
-Proyek dapat dipublikasikan melalui Sites dari Codex. Jika repositori ini juga dihubungkan ke GitHub dan Vercel, setiap push ke branch produksi dapat digunakan untuk memicu deployment otomatis sesuai pengaturan proyek Vercel.
+Proyek menggunakan Next.js App Router standar. Dependensi Vinext, Vite, dan Cloudflare telah dihapus.
+
+Di Vercel, pilih **Add New → Project**, lalu impor repository `johnsonavengers/johnsonkalimantan`. Gunakan framework **Next.js**, root directory proyek, build command `npm run build`, dan output directory default. Tidak diperlukan environment variable. Setelah terhubung, setiap push ke `main` akan memicu deployment otomatis.
+
+Jalankan `npm test` untuk memeriksa build produksi, halaman utama, dan kesesuaian API dengan file data. Jalankan `npm run lint` untuk pemeriksaan kode.
 
 Tidak diperlukan database atau server admin untuk memperbarui data campaign.
 

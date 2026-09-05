@@ -1,18 +1,34 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { before, after } from "node:test";
+import { spawn } from "node:child_process";
+import { setTimeout } from "node:timers/promises";
+
+let server;
+const origin = "http://127.0.0.1:3187";
+before(async () => {
+  server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "--hostname", "127.0.0.1", "--port", "3187"], { stdio: "pipe" });
+  let logs = "";
+  server.stdout.on("data", chunk => { logs += chunk; });
+  server.stderr.on("data", chunk => { logs += chunk; });
+  for (let attempt = 0; attempt < 100; attempt++) {
+    if (server.exitCode !== null) throw new Error(logs);
+    if (logs.includes("Ready in")) return;
+    await setTimeout(100);
+  }
+  throw new Error(`Production server did not start: ${logs}`);
+});
+after(async () => {
+  if (server && server.exitCode === null) {
+    const exited = new Promise(resolve => server.once("exit", resolve));
+    server.kill("SIGTERM");
+    await exited;
+  }
+});
 
 async function render(pathname = "/") {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
-  return worker.fetch(
-    new Request(`http://localhost${pathname}`, {
-      headers: { accept: pathname.startsWith("/api") ? "application/json" : "text/html" },
-    }),
-    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
-    { waitUntil() {}, passThroughOnException() {} },
-  );
+  return fetch(`${origin}${pathname}`);
 }
 
 test("renders the public transparency dashboard shell", async () => {
