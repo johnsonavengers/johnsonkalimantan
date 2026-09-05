@@ -50,3 +50,12 @@ test("serves the repository campaign data", async () => {
   assert.equal(payload.campaign.name, "JOHNSON UNTUK KALIMANTAN");
   assert.equal(payload.campaign.donationRate, 0.1);
 });
+
+test("publishes the confirmed September 1–4 aggregate without invented orders", async () => {
+  const payload = await (await render("/api/campaign")).json();
+  const report = payload.daily.find(row => row.periodStart === "2026-09-01" && row.date === "2026-09-04");
+  assert.ok(report);
+  assert.equal(report.sales, 27698700);
+  assert.equal(report.sales * payload.campaign.donationRate, 2769870);
+  assert.equal(report.orders, null);
+});

@@ -65,6 +65,10 @@ Sebelum menyimpan, periksa bahwa:
 
 Jika tanggal sudah ada, perbarui catatan yang lama. Jangan membuat tanggal ganda.
 
+Untuk laporan gabungan, gunakan `periodStart` sebagai tanggal awal dan `date` sebagai tanggal akhir. Rekap 1–4 September 2026 tercatat dengan penjualan Rp27.698.700 dan alokasi otomatis Rp2.769.870. Jangan membagi total tersebut menjadi penjualan harian tanpa rincian sumber. Tanggal catatan berikutnya tidak boleh tumpang tindih dengan periode yang sudah dicatat.
+
+Gunakan `orders: null` bila jumlah order belum tersedia, bukan nol. Total order ditampilkan belum tersedia sampai seluruh catatan memiliki jumlah order. Jika rincian harian kemudian tersedia, ganti rekap gabungan dengan rinciannya, jangan tambahkan keduanya.
+
 ## Cara perhitungan bekerja
 
 Dashboard menghitung otomatis:

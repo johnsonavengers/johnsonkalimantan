@@ -8,7 +8,7 @@ function BrandLogo() {
   return <Image className="brand-logo" src={johnsonLogo} alt="Logo Johnson" width={52} height={52} sizes="52px" />;
 }
 
-type DailyRecord = { date: string; sales: number; orders: number };
+type DailyRecord = { date: string; periodStart?: string; sales: number; orders: number | null };
 type Disbursement = {
   date: string;
   amount: number;
@@ -53,6 +53,9 @@ const shortDate = new Intl.DateTimeFormat("id-ID", {
 });
 
 const toJakartaDate = (date: string) => new Date(`${date}T00:00:00+07:00`);
+const recordDate = (row: DailyRecord) => row.periodStart && row.periodStart !== row.date
+  ? `${shortDate.format(toJakartaDate(row.periodStart))} – ${shortDate.format(toJakartaDate(row.date))}`
+  : shortDate.format(toJakartaDate(row.date));
 const inclusiveDays = (from: string, to: string) =>
   Math.max(Math.round((toJakartaDate(to).getTime() - toJakartaDate(from).getTime()) / 86400000) + 1, 1);
 
@@ -118,7 +121,8 @@ export default function Dashboard() {
     const daily = [...data.daily].sort((a, b) => a.date.localeCompare(b.date));
     const totalSales = daily.reduce((sum, row) => sum + row.sales, 0);
     const totalDonation = totalSales * data.campaign.donationRate;
-    const totalOrders = daily.reduce((sum, row) => sum + row.orders, 0);
+    const totalOrders = daily.some((row) => row.orders === null)
+      ? null : daily.reduce((sum, row) => sum + (row.orders ?? 0), 0);
     const latest = daily.at(-1) ?? null;
     const totalDays = inclusiveDays(data.campaign.startDate, data.campaign.endDate);
     const campaignDay = latest ? Math.min(inclusiveDays(data.campaign.startDate, latest.date), totalDays) : null;
@@ -185,7 +189,7 @@ export default function Dashboard() {
             <div className="growing"><span>AND GROWING.</span><span className="arrow">↗</span></div>
             <div className="campaign-map"><Image src="/indonesia-map.svg" alt="Peta Indonesia dengan wilayah Kalimantan disorot oranye" width={780} height={300} unoptimized /><span>KALIMANTAN, INDONESIA</span></div>
             <div className="total-meta">
-              <span><b>{integer.format(metrics.totalOrders)}</b> order berkontribusi</span>
+              <span><b>{metrics.totalOrders === null ? "Belum tersedia" : integer.format(metrics.totalOrders)}</b> order berkontribusi</span>
               <span><b>{metrics.campaignDay ? `${String(metrics.campaignDay).padStart(2, "0")} / ${metrics.totalDays}` : "—"}</b> campaign day</span>
             </div>
           </div>
@@ -200,7 +204,7 @@ export default function Dashboard() {
 
       <section className="ticker" aria-label="Ringkasan campaign">
         <div className="ticker-inner section-shell">
-          <div><span>Hari terbaru</span><b>{metrics.latest ? `+${rupiah.format(metrics.latest.sales * data.campaign.donationRate)}` : "Belum ada data"}</b></div>
+          <div><span>Alokasi rekap terbaru</span><b>{metrics.latest ? `+${rupiah.format(metrics.latest.sales * data.campaign.donationRate)}` : "Belum ada data"}</b></div>
           <div><span>Campaign sales</span><b>{rupiah.format(metrics.totalSales)}</b></div>
           <div><span>Allocation</span><b className="orange-text">{donationPercentage}%</b></div>
           <div><span>Status</span><b className="status-text"><i /> {data.campaign.status === "active" ? "Aktif" : data.campaign.status}</b></div>
@@ -214,9 +218,9 @@ export default function Dashboard() {
         </div>
 
         <div className="stats-grid">
-          <article><span>Total campaign sales</span><strong>{rupiah.format(metrics.totalSales)}</strong><small>Akumulasi data harian</small></article>
+          <article><span>Total campaign sales</span><strong>{rupiah.format(metrics.totalSales)}</strong><small>Akumulasi catatan penjualan</small></article>
           <article className="featured-stat"><span>Donation allocated</span><strong>{rupiah.format(metrics.totalDonation)}</strong><small>{donationPercentage}% dari penjualan campaign</small></article>
-          <article><span>Contributing orders</span><strong>{integer.format(metrics.totalOrders)}</strong><small>Order memenuhi ketentuan</small></article>
+          <article><span>Contributing orders</span><strong>{metrics.totalOrders === null ? "—" : integer.format(metrics.totalOrders)}</strong><small>{metrics.totalOrders === null ? "Jumlah order belum tersedia" : "Order memenuhi ketentuan"}</small></article>
           <article><span>Campaign day</span><strong>{metrics.campaignDay ? `${String(metrics.campaignDay).padStart(2, "0")} / ${metrics.totalDays}` : `— / ${metrics.totalDays}`}</strong><small>Berdasarkan data terakhir</small></article>
         </div>
 
@@ -256,7 +260,8 @@ export default function Dashboard() {
                     return <circle key={row.date} cx={x} cy={y} r="1.5" className={index === metrics.cumulative.length - 1 ? "chart-dot latest" : "chart-dot"} />;
                   })}
                 </svg>
-                <div className="chart-labels"><span>{shortDate.format(toJakartaDate(metrics.cumulative[0].date))}</span><span>{shortDate.format(toJakartaDate(metrics.cumulative.at(-1)!.date))}</span></div>
+                <div className="chart-labels"><span>{shortDate.format(toJakartaDate(metrics.cumulative[0].periodStart ?? metrics.cumulative[0].date))}</span><span>{shortDate.format(toJakartaDate(metrics.cumulative.at(-1)!.date))}</span></div>
+                {metrics.daily.some((row) => row.periodStart && row.periodStart !== row.date) ? <p className="chart-period-note">Rekap gabungan ditampilkan sebagai satu titik. Rincian per hari belum tersedia.</p> : null}
               </div>
             ) : (
               <div className="empty-chart"><div className="empty-chart-line" /><p>Grafik akan terbentuk setelah data penjualan harian pertama dipublikasikan.</p></div>
@@ -301,20 +306,20 @@ export default function Dashboard() {
       <section className="log-section section-pad" id="data-harian">
         <div className="section-shell">
           <div className="section-heading compact-heading">
-            <div><span className="section-index light-index">06 / CATATAN HARIAN</span><h2>Daily transparency log</h2></div>
+            <div><span className="section-index light-index">06 / CATATAN PENJUALAN</span><h2>Catatan transparansi</h2></div>
             <p>Terakhir diperbarui<br /><b>{displayUpdate(data.campaign.lastUpdated)}</b></p>
           </div>
           <div className="table-wrap">
             <table>
-              <thead><tr><th>Tanggal</th><th>Penjualan Campaign</th><th>Alokasi Donasi</th><th>Total Donasi</th><th>Jumlah Order</th></tr></thead>
+              <thead><tr><th>Tanggal / Periode</th><th>Penjualan Campaign</th><th>Alokasi Donasi</th><th>Total Donasi</th><th>Jumlah Order</th></tr></thead>
               <tbody>
                 {metrics.cumulative.length ? [...metrics.cumulative].reverse().map((row, index) => (
                   <tr key={row.date} className={index === 0 ? "latest-row" : undefined}>
-                    <td><span className="mobile-label">Tanggal</span>{shortDate.format(toJakartaDate(row.date))}{index === 0 ? <small>TERBARU</small> : null}</td>
+                    <td><span className="mobile-label">Periode</span>{recordDate(row)}{index === 0 ? <small>TERBARU</small> : null}</td>
                     <td><span className="mobile-label">Penjualan</span>{rupiah.format(row.sales)}</td>
                     <td><span className="mobile-label">Alokasi</span>{rupiah.format(row.donation)}</td>
                     <td><span className="mobile-label">Total donasi</span>{rupiah.format(row.cumulative)}</td>
-                    <td><span className="mobile-label">Order</span>{integer.format(row.orders)}</td>
+                    <td><span className="mobile-label">Order</span>{row.orders === null ? "Belum tersedia" : integer.format(row.orders)}</td>
                   </tr>
                 )) : (
                   <tr className="empty-row"><td colSpan={5}>Belum ada data penjualan harian yang dipublikasikan.</td></tr>
@@ -322,7 +327,7 @@ export default function Dashboard() {
               </tbody>
             </table>
           </div>
-          <p className="table-note"><i /> Data diperbarui secara manual setiap hari dari catatan campaign yang telah diverifikasi.</p>
+          <p className="table-note"><i /> Data diperbarui dari laporan penjualan campaign. Rekap gabungan tidak dibagi menjadi angka harian; jumlah order yang belum dilaporkan ditandai belum tersedia.</p>
         </div>
       </section>
 

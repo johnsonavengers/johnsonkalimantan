@@ -8,8 +8,15 @@
     "donationTarget": null,
     "currency": "IDR",
     "shopUrl": "",
-    "lastUpdated": null
+    "lastUpdated": "2026-09-05T15:52:20+07:00"
   },
-  "daily": [],
+  "daily": [
+    {
+      "periodStart": "2026-09-01",
+      "date": "2026-09-04",
+      "sales": 27698700,
+      "orders": null
+    }
+  ],
   "disbursements": []
 }

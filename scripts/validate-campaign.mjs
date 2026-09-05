@@ -11,12 +11,18 @@ if (!Array.isArray(daily)) failures.push("Daily harus berupa daftar.");
 if (!Array.isArray(disbursements)) failures.push("Disbursements harus berupa daftar.");
 
 const seen = new Set();
+const periods = [];
 for (const [index, row] of (daily ?? []).entries()) {
+  const start = row.periodStart ?? row.date;
+  const validDate = (value) => typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
+  if (!validDate(start) || !validDate(row.date) || start > row.date) failures.push(`Periode tidak valid pada baris ${index + 1}.`);
+  if (periods.some((period) => start <= period.end && row.date >= period.start)) failures.push(`Periode tumpang tindih pada ${row.date}.`);
+  periods.push({ start, end: row.date });
   if (seen.has(row.date)) failures.push(`Tanggal duplikat: ${row.date}.`);
   seen.add(row.date);
-  if (row.date < campaign.startDate || row.date > campaign.endDate) failures.push(`Tanggal di luar periode campaign pada baris ${index + 1}.`);
+  if (start < campaign.startDate || row.date > campaign.endDate) failures.push(`Tanggal di luar periode campaign pada baris ${index + 1}.`);
   if (!Number.isFinite(row.sales) || row.sales <= 0) failures.push(`Sales harus lebih dari nol pada ${row.date}.`);
-  if (!Number.isInteger(row.orders) || row.orders < 0) failures.push(`Orders tidak valid pada ${row.date}.`);
+  if (row.orders !== null && (!Number.isInteger(row.orders) || row.orders < 0)) failures.push(`Orders tidak valid pada ${row.date}.`);
 }
 
 for (const [index, row] of (disbursements ?? []).entries()) {
@@ -31,4 +37,4 @@ if (failures.length) {
 
 const totalSales = daily.reduce((sum, row) => sum + row.sales, 0);
 const totalDonation = totalSales * campaign.donationRate;
-console.log(`Data campaign valid: ${daily.length} hari, total sales ${totalSales}, total alokasi ${totalDonation}.`);
+console.log(`Data campaign valid: ${daily.length} catatan, total sales ${totalSales}, total alokasi ${totalDonation}.`);
