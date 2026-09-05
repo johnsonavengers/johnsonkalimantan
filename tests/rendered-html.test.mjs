@@ -54,7 +54,7 @@ test("serves the repository campaign data", async () => {
   assert.match(payload.campaign.distribution.roundingNote, /dibulatkan ke atas/);
 });
 
-test("publishes the confirmed September 1–4 aggregate without invented orders", async () => {
+test("publishes the confirmed September 1–4 sales and orders by channel", async () => {
   const payload = await (await render("/api/campaign")).json();
   const report = payload.daily.find(row => row.periodStart === "2026-09-01" && row.date === "2026-09-04");
   assert.ok(report);
@@ -62,7 +62,9 @@ test("publishes the confirmed September 1–4 aggregate without invented orders"
   assert.deepEqual(report.channels, { website: 20248700, whatsapp: 7450000 });
   assert.equal(report.channels.website + report.channels.whatsapp, report.sales);
   assert.equal(report.sales * payload.campaign.donationRate, 2769870);
-  assert.equal(report.orders, null);
+  assert.equal(report.orders, 86);
+  assert.deepEqual(report.orderChannels, { website: 60, whatsapp: 26 });
+  assert.equal(report.orderChannels.website + report.orderChannels.whatsapp, report.orders);
 });
 
 test("publishes the supplied Kitabisa proof and reconciles the allocation", async () => {

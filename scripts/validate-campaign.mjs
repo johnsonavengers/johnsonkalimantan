@@ -24,6 +24,7 @@ for (const [index, row] of (daily ?? []).entries()) {
   if (!Number.isFinite(row.sales) || row.sales <= 0) failures.push(`Sales harus lebih dari nol pada ${row.date}.`);
   if (row.channels && (![row.channels.website, row.channels.whatsapp].every(value => Number.isFinite(value) && value >= 0) || row.channels.website + row.channels.whatsapp !== row.sales)) failures.push(`Rincian kanal harus sesuai total sales pada ${row.date}.`);
   if (row.orders !== null && (!Number.isInteger(row.orders) || row.orders < 0)) failures.push(`Orders tidak valid pada ${row.date}.`);
+  if (row.orderChannels && (![row.orderChannels.website, row.orderChannels.whatsapp].every(value => Number.isInteger(value) && value >= 0) || row.orderChannels.website + row.orderChannels.whatsapp !== row.orders)) failures.push(`Rincian order kanal harus sesuai total orders pada ${row.date}.`);
 }
 
 for (const [index, row] of (disbursements ?? []).entries()) {

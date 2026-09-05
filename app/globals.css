@@ -54,6 +54,7 @@ button, input { font: inherit; }
 .sales-channels > p { margin: 0 0 14px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .sales-channels dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 0; }
 .sales-channels dt { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+.sales-channels dd small { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; font-weight: 400; letter-spacing: normal; }
 .sales-channels dd { margin: 0; color: var(--green-950); font-size: clamp(16px, 4.5cqi, 25px); font-weight: 750; letter-spacing: -.04em; }
 .total-card { position: relative; overflow: hidden; padding: clamp(24px, 3.5vw, 54px); color: white; background: var(--green-950); min-height: 440px; display: flex; flex-direction: column; justify-content: space-between; }
 .total-card { gap: 24px; container-type: inline-size; }

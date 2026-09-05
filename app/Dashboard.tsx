@@ -8,7 +8,7 @@ function BrandLogo() {
   return <Image className="brand-logo" src={johnsonLogo} alt="Logo Johnson" width={52} height={52} sizes="52px" />;
 }
 
-type DailyRecord = { date: string; periodStart?: string; sales: number; orders: number | null; channels?: { website: number; whatsapp: number } };
+type DailyRecord = { date: string; periodStart?: string; sales: number; orders: number | null; channels?: { website: number; whatsapp: number }; orderChannels?: { website: number; whatsapp: number } };
 type Disbursement = {
   date: string | null;
   amount: number;
@@ -184,8 +184,8 @@ export default function Dashboard() {
               <div className="sales-channels">
                 <p>Penjualan {recordDate(metrics.latest)}</p>
                 <dl>
-                  <div><dt>Website</dt><dd>{rupiah.format(metrics.latest.channels.website)}</dd></div>
-                  <div><dt>WhatsApp</dt><dd>{rupiah.format(metrics.latest.channels.whatsapp)}</dd></div>
+                  <div><dt>Website</dt><dd>{rupiah.format(metrics.latest.channels.website)}{metrics.latest.orderChannels ? <small>{integer.format(metrics.latest.orderChannels.website)} order</small> : null}</dd></div>
+                  <div><dt>WhatsApp</dt><dd>{rupiah.format(metrics.latest.channels.whatsapp)}{metrics.latest.orderChannels ? <small>{integer.format(metrics.latest.orderChannels.whatsapp)} order</small> : null}</dd></div>
                 </dl>
               </div>
             ) : null}
