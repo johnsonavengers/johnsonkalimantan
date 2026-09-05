@@ -38,6 +38,8 @@ test("renders the public transparency dashboard shell", async () => {
   const html = await response.text();
   assert.match(html, /<title>JOHNSON UNTUK KALIMANTAN/);
   assert.match(html, /Menyiapkan/);
+  assert.match(html, /class="leaf-atmosphere" aria-hidden="true"/);
+  assert.doesNotMatch(html, /leaf-motion-toggle|Jeda efek|Lanjutkan efek|is-paused/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Starter Project/);
 });
 

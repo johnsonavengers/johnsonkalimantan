@@ -34,25 +34,6 @@
   border-radius: 1px 70% 2px 50%;
   animation: leaf-ash var(--fall-duration) linear var(--fall-delay) infinite;
 }
-.leaf-motion-toggle {
-  position: fixed;
-  right: 16px;
-  bottom: max(16px, env(safe-area-inset-bottom));
-  z-index: 45;
-  min-height: 44px;
-  padding: 0 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid #d8e5da;
-  border-radius: 24px;
-  background: #ffffffed;
-  color: #0f3d2e;
-  font: 600 12px Arial, sans-serif;
-  cursor: pointer;
-}
-.leaf-motion-toggle:focus-visible { outline: 3px solid #f26a2e; outline-offset: 3px; }
-.is-paused *, .is-paused .leaf-tumble { animation-play-state: paused; }
 @keyframes leaf-fall {
   0% { transform: translate3d(0, -20px, 0) rotate(-20deg); opacity: 0; }
   8% { opacity: 1; }
@@ -76,9 +57,8 @@
 }
 @media (max-width: 600px) {
   .falling-leaf:nth-child(even) { display: none; }
-  .leaf-motion-toggle { right: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .leaf-atmosphere, .leaf-motion-toggle { display: none; }
+  .leaf-atmosphere { display: none; }
   .leaf-atmosphere * { animation: none !important; }
 }
