@@ -8,6 +8,10 @@
     "donationTarget": null,
     "currency": "IDR",
     "shopUrl": "",
+    "distribution": {
+      "platform": "Kitabisa.com",
+      "campaignUrl": "https://kitabisa.com/campaign/patunganjohnsonuntukhutan"
+    },
     "lastUpdated": "2026-09-05T15:52:20+07:00"
   },
   "daily": [

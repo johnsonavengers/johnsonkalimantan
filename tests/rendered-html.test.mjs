@@ -49,6 +49,10 @@ test("serves the repository campaign data", async () => {
   assert.deepEqual(payload, source);
   assert.equal(payload.campaign.name, "JOHNSON UNTUK KALIMANTAN");
   assert.equal(payload.campaign.donationRate, 0.1);
+  assert.deepEqual(payload.campaign.distribution, {
+    platform: "Kitabisa.com",
+    campaignUrl: "https://kitabisa.com/campaign/patunganjohnsonuntukhutan",
+  });
 });
 
 test("publishes the confirmed September 1–4 aggregate without invented orders", async () => {

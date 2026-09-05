@@ -27,6 +27,7 @@ type CampaignData = {
     donationTarget: number | null;
     currency: string;
     shopUrl: string;
+    distribution?: { platform: string; campaignUrl: string };
     lastUpdated: string | null;
   };
   daily: DailyRecord[];
@@ -290,7 +291,7 @@ export default function Dashboard() {
             ["02", "Transaksi tercatat", "Nilainya masuk ke campaign sales."],
             ["03", `${donationPercentage}% dihitung`, "Alokasi dihitung otomatis dari penjualan."],
             ["04", "Dana terkumpul", "Masuk ke total komitmen campaign."],
-            ["05", "Dana disalurkan", "Disalurkan kepada penerima yang dicatat."],
+            ["05", "Dana disalurkan", data.campaign.distribution ? `Dana akan disalurkan melalui ${data.campaign.distribution.platform}.` : "Disalurkan kepada penerima yang dicatat."],
             ["06", "Bukti diterbitkan", "Dokumen penyaluran tampil secara terbuka."],
           ].map(([number, title, body], index) => (
             <li key={number}>
@@ -341,6 +342,16 @@ export default function Dashboard() {
           <article><span>Total disbursed</span><strong>{rupiah.format(metrics.totalDisbursed)}</strong><small>Sudah disalurkan</small></article>
           <article className="waiting-card"><span>Waiting to be disbursed</span><strong>{rupiah.format(metrics.waiting)}</strong><small>Menunggu penyaluran</small></article>
         </div>
+        {data.campaign.distribution ? (
+          <aside className="distribution-card" aria-label="Jalur penyaluran donasi">
+            <div>
+              <span className="section-index">JALUR PENYALURAN</span>
+              <h3>Melalui {data.campaign.distribution.platform}</h3>
+              <p>Dana donasi campaign Johnson akan disalurkan melalui penggalangan dana di {data.campaign.distribution.platform}. Tautan campaign bukan bukti penyaluran; bukti akan dipublikasikan setelah dana disalurkan.</p>
+            </div>
+            <a href={data.campaign.distribution.campaignUrl} target="_blank" rel="noopener noreferrer">Lihat campaign di Kitabisa <span aria-hidden="true">↗</span><span className="sr-only"> (dibuka di tab baru)</span></a>
+          </aside>
+        ) : null}
         <div className="proof-box">
           <div className="proof-title"><span>Proof of disbursement</span><b>{String(data.disbursements.length).padStart(2, "0")} DOKUMEN</b></div>
           {data.disbursements.length ? (
