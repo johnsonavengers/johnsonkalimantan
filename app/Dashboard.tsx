@@ -10,11 +10,12 @@ function BrandLogo() {
 
 type DailyRecord = { date: string; periodStart?: string; sales: number; orders: number | null };
 type Disbursement = {
-  date: string;
+  date: string | null;
   amount: number;
   recipient: string;
   description: string;
   proofUrl?: string;
+  proofImage?: { width: number; height: number; alt: string };
   documentationUrl?: string;
 };
 type CampaignData = {
@@ -291,7 +292,7 @@ export default function Dashboard() {
             ["02", "Transaksi tercatat", "Nilainya masuk ke campaign sales."],
             ["03", `${donationPercentage}% dihitung`, "Alokasi dihitung otomatis dari penjualan."],
             ["04", "Dana terkumpul", "Masuk ke total komitmen campaign."],
-            ["05", "Dana disalurkan", data.campaign.distribution ? `Dana akan disalurkan melalui ${data.campaign.distribution.platform}.` : "Disalurkan kepada penerima yang dicatat."],
+            ["05", "Dana disalurkan", data.campaign.distribution ? `Penyaluran dana melalui ${data.campaign.distribution.platform}.` : "Disalurkan kepada penerima yang dicatat."],
             ["06", "Bukti diterbitkan", "Dokumen penyaluran tampil secara terbuka."],
           ].map(([number, title, body], index) => (
             <li key={number}>
@@ -335,19 +336,20 @@ export default function Dashboard() {
       <section className="proof-section section-shell section-pad" id="bukti">
         <div className="section-heading">
           <div><span className="section-index">07 / STATUS DONASI</span><h2>Dari komitmen<br /><em>menjadi bukti.</em></h2></div>
-          <p>Penyaluran dan dokumennya akan tampil di sini—tidak lebih cepat dari kejadian sebenarnya.</p>
+          <p>Catatan penyaluran dan bukti yang dipublikasikan oleh tim Johnson dapat dilihat di sini.</p>
         </div>
         <div className="fund-grid">
           <article><span>Total committed</span><strong>{rupiah.format(metrics.totalDonation)}</strong><small>Akumulasi alokasi</small></article>
           <article><span>Total disbursed</span><strong>{rupiah.format(metrics.totalDisbursed)}</strong><small>Sudah disalurkan</small></article>
-          <article className="waiting-card"><span>Waiting to be disbursed</span><strong>{rupiah.format(metrics.waiting)}</strong><small>Menunggu penyaluran</small></article>
+          <article className="waiting-card"><span>Waiting to be disbursed</span><strong>{rupiah.format(metrics.waiting)}</strong><small>{metrics.totalDonation > 0 && metrics.waiting === 0 ? "Seluruh alokasi tercatat telah disalurkan" : "Menunggu penyaluran"}</small></article>
         </div>
+        {metrics.totalDisbursed > metrics.totalDonation ? <p className="reconciliation-note">Nominal penyaluran {rupiah.format(metrics.totalDisbursed)} melebihi alokasi 10% sebesar {rupiah.format(metrics.totalDisbursed - metrics.totalDonation)}. Total alokasi tetap {rupiah.format(metrics.totalDonation)} sesuai catatan penjualan; selisih tidak menambah angka penjualan.</p> : null}
         {data.campaign.distribution ? (
           <aside className="distribution-card" aria-label="Jalur penyaluran donasi">
             <div>
               <span className="section-index">JALUR PENYALURAN</span>
               <h3>Melalui {data.campaign.distribution.platform}</h3>
-              <p>Dana donasi campaign Johnson akan disalurkan melalui penggalangan dana di {data.campaign.distribution.platform}. Tautan campaign bukan bukti penyaluran; bukti akan dipublikasikan setelah dana disalurkan.</p>
+              <p>{data.disbursements.length ? `Dana telah disalurkan melalui penggalangan dana di ${data.campaign.distribution.platform}, berdasarkan konfirmasi tim Johnson. Bukti yang diberikan ditampilkan di bawah.` : `Dana donasi campaign Johnson akan disalurkan melalui penggalangan dana di ${data.campaign.distribution.platform}. Bukti akan dipublikasikan setelah dana disalurkan.`}</p>
             </div>
             <a href={data.campaign.distribution.campaignUrl} target="_blank" rel="noopener noreferrer">Lihat campaign di Kitabisa <span aria-hidden="true">↗</span><span className="sr-only"> (dibuka di tab baru)</span></a>
           </aside>
@@ -358,9 +360,10 @@ export default function Dashboard() {
             <div className="proof-list">
               {data.disbursements.map((item) => (
                 <article key={`${item.date}-${item.amount}`}>
-                  <div><span>{shortDate.format(toJakartaDate(item.date))}</span><strong>{rupiah.format(item.amount)}</strong></div>
-                  <div><span>Penerima</span><strong>{item.recipient}</strong></div>
+                  <div><span>{item.date ? shortDate.format(toJakartaDate(item.date)) : "Tanggal transaksi belum dicantumkan"}</span><strong>{rupiah.format(item.amount)}</strong></div>
+                  <div><span>Tujuan penyaluran</span><strong>{item.recipient}</strong></div>
                   <p>{item.description}</p>
+                  {item.proofUrl && item.proofImage ? <a className="proof-image" href={item.proofUrl} target="_blank" rel="noopener noreferrer" aria-label="Buka gambar bukti penyaluran di tab baru"><Image src={item.proofUrl} alt={item.proofImage.alt} width={item.proofImage.width} height={item.proofImage.height} unoptimized /></a> : null}
                   <div className="proof-links">
                     {item.proofUrl ? <a href={item.proofUrl}>Lihat bukti ↗</a> : null}
                     {item.documentationUrl ? <a href={item.documentationUrl}>Dokumentasi ↗</a> : null}
@@ -390,7 +393,7 @@ export default function Dashboard() {
           <li className="done"><span>01</span><div><b>Campaign start</b><strong>{longDate.format(toJakartaDate(data.campaign.startDate))}</strong></div></li>
           <li className="active"><span>02</span><div><b>Updated daily</b><strong>Pembaruan data campaign</strong></div></li>
           <li><span>03</span><div><b>Campaign close</b><strong>{longDate.format(toJakartaDate(data.campaign.endDate))}</strong></div></li>
-          <li><span>04</span><div><b>Donation disbursement</b><strong>Setelah campaign berakhir</strong></div></li>
+          <li className={data.disbursements.length ? "done" : undefined}><span>04</span><div><b>Donation disbursement</b><strong>{data.disbursements.length ? "Penyaluran telah dimulai melalui Kitabisa" : "Setelah campaign berakhir"}</strong></div></li>
           <li><span>05</span><div><b>Final report</b><strong>Setelah penyaluran selesai</strong></div></li>
         </ol>
       </section>

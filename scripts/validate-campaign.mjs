@@ -27,7 +27,8 @@ for (const [index, row] of (daily ?? []).entries()) {
 
 for (const [index, row] of (disbursements ?? []).entries()) {
   if (!Number.isFinite(row.amount) || row.amount <= 0) failures.push(`Nominal penyaluran tidak valid pada baris ${index + 1}.`);
-  if (!row.recipient || !row.description || !row.date) failures.push(`Data penyaluran belum lengkap pada baris ${index + 1}.`);
+  if (!row.recipient || !row.description || (row.date !== null && !/^\d{4}-\d{2}-\d{2}$/.test(row.date ?? ""))) failures.push(`Data penyaluran belum lengkap pada baris ${index + 1}.`);
+  if (row.date === null && !row.proofUrl) failures.push(`Penyaluran tanpa tanggal harus menyertakan bukti pada baris ${index + 1}.`);
 }
 
 if (failures.length) {

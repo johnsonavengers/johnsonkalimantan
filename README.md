@@ -99,6 +99,8 @@ Setelah dana benar-benar disalurkan, tambahkan catatan ke `disbursements`:
 
 Simpan dokumen bukti publik di folder `public/proofs`. Jangan menambahkan nama penerima, tanggal, nominal, atau dokumen yang belum terverifikasi.
 
+Jika tanggal transaksi tidak tersedia pada bukti, gunakan `date: null` dan sertakan `proofUrl`; jangan memakai tanggal publikasi sebagai tanggal transaksi. Untuk menampilkan gambar langsung, tambahkan `proofImage` dengan `width`, `height`, dan `alt`. Penyaluran ke campaign Kitabisa tidak dinyatakan sebagai penerimaan oleh penerima manfaat akhir. Bila nominal penyaluran melebihi alokasi, dashboard menjelaskan selisihnya tanpa mengubah penjualan atau menampilkan sisa negatif.
+
 ## Menjalankan situs secara lokal
 
 Persyaratan: Node.js versi 22.13 atau lebih baru.

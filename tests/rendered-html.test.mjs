@@ -63,3 +63,18 @@ test("publishes the confirmed September 1–4 aggregate without invented orders"
   assert.equal(report.sales * payload.campaign.donationRate, 2769870);
   assert.equal(report.orders, null);
 });
+
+test("publishes the supplied Kitabisa proof and reconciles the allocation", async () => {
+  const payload = await (await render("/api/campaign")).json();
+  const proof = payload.disbursements[0];
+  assert.equal(proof.amount, 2770000);
+  assert.equal(proof.date, null);
+  const allocation = payload.daily.reduce((sum, row) => sum + row.sales, 0) * payload.campaign.donationRate;
+  assert.equal(proof.amount - allocation, 130);
+  assert.equal(Math.max(allocation - proof.amount, 0), 0);
+  const response = await render(proof.proofUrl);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type"), /image\/jpeg/);
+  const original = await readFile(new URL("../public/proofs/kitabisa-johnson-2770000.jpg", import.meta.url));
+  assert.deepEqual(Buffer.from(await response.arrayBuffer()), original);
+});
