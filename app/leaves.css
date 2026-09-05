@@ -1,0 +1,84 @@
+.leaf-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+.falling-leaf {
+  position: absolute;
+  top: -50px;
+  width: var(--leaf-size);
+  height: calc(var(--leaf-size) * 1.5);
+  animation: leaf-fall var(--fall-duration) linear var(--fall-delay) infinite;
+}
+.leaf-tumble { width: 100%; height: 100%; animation: leaf-tumble 5s ease-in-out infinite alternate; }
+.leaf-blade {
+  position: absolute;
+  inset: 0;
+  border-radius: 4% 85% 5% 85%;
+  background: linear-gradient(58deg, transparent 47%, #b8bf72 49%, #b8bf72 51%, transparent 53%), linear-gradient(130deg, #93ac58, #275a38);
+  box-shadow: inset -2px -2px 3px #16382050;
+  opacity: .45;
+}
+.burning-leaf .leaf-blade { animation: leaf-burn var(--fall-duration) linear var(--fall-delay) infinite; }
+.leaf-fragment {
+  position: absolute;
+  left: 45%;
+  top: 50%;
+  width: 4px;
+  height: 6px;
+  background: #ed782e;
+  opacity: 0;
+  border-radius: 1px 70% 2px 50%;
+  animation: leaf-ash var(--fall-duration) linear var(--fall-delay) infinite;
+}
+.leaf-motion-toggle {
+  position: fixed;
+  right: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 45;
+  min-height: 44px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #d8e5da;
+  border-radius: 24px;
+  background: #ffffffed;
+  color: #0f3d2e;
+  font: 600 12px Arial, sans-serif;
+  cursor: pointer;
+}
+.leaf-motion-toggle:focus-visible { outline: 3px solid #f26a2e; outline-offset: 3px; }
+.is-paused *, .is-paused .leaf-tumble { animation-play-state: paused; }
+@keyframes leaf-fall {
+  0% { transform: translate3d(0, -20px, 0) rotate(-20deg); opacity: 0; }
+  8% { opacity: 1; }
+  45% { transform: translate3d(var(--drift), 48vh, 0) rotate(85deg); }
+  90% { opacity: 1; }
+  100% { transform: translate3d(0, calc(100vh + 90px), 0) rotate(190deg); opacity: 0; }
+}
+@keyframes leaf-tumble { from { transform: rotate(-25deg) scaleX(.65); } to { transform: rotate(30deg) scaleX(1); } }
+@keyframes leaf-burn {
+  0%, 38% { opacity: .45; filter: none; clip-path: inset(0); }
+  46% { opacity: .65; filter: sepia(1) saturate(3) drop-shadow(0 0 3px #f26a2e); clip-path: inset(0); }
+  55% { opacity: .55; filter: sepia(1) saturate(5) drop-shadow(0 0 5px #ff8a36); clip-path: polygon(0 0,100% 0,100% 55%,70% 43%,50% 62%,25% 46%,0 70%); }
+  65% { opacity: 0; filter: brightness(.3); clip-path: polygon(0 0,100% 0,100% 10%,65% 0,40% 13%,0 5%); }
+  100% { opacity: 0; }
+}
+@keyframes leaf-ash {
+  0%, 51% { opacity: 0; transform: translate(0,0) scale(1); }
+  55% { opacity: .65; background: #ed782e; }
+  64% { opacity: .4; background: #514b40; }
+  76%, 100% { opacity: 0; transform: translate(var(--shard-x), var(--shard-y)) rotate(var(--shard-turn)) scale(.15); }
+}
+@media (max-width: 600px) {
+  .falling-leaf:nth-child(even) { display: none; }
+  .leaf-motion-toggle { right: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-atmosphere, .leaf-motion-toggle { display: none; }
+  .leaf-atmosphere * { animation: none !important; }
+}
