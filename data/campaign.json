@@ -10,7 +10,8 @@
     "shopUrl": "",
     "distribution": {
       "platform": "Kitabisa.com",
-      "campaignUrl": "https://kitabisa.com/campaign/patunganjohnsonuntukhutan"
+      "campaignUrl": "https://kitabisa.com/campaign/patunganjohnsonuntukhutan",
+      "roundingNote": "Menurut penjelasan tim Johnson, nominal penyaluran dibulatkan ke atas agar dapat diproses melalui sistem Kitabisa.com."
     },
     "lastUpdated": "2026-09-05T16:29:28+07:00"
   },
@@ -19,6 +20,7 @@
       "periodStart": "2026-09-01",
       "date": "2026-09-04",
       "sales": 27698700,
+      "channels": { "website": 20248700, "whatsapp": 7450000 },
       "orders": null
     }
   ],

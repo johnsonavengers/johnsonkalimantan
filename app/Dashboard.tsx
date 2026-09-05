@@ -8,7 +8,7 @@ function BrandLogo() {
   return <Image className="brand-logo" src={johnsonLogo} alt="Logo Johnson" width={52} height={52} sizes="52px" />;
 }
 
-type DailyRecord = { date: string; periodStart?: string; sales: number; orders: number | null };
+type DailyRecord = { date: string; periodStart?: string; sales: number; orders: number | null; channels?: { website: number; whatsapp: number } };
 type Disbursement = {
   date: string | null;
   amount: number;
@@ -28,7 +28,7 @@ type CampaignData = {
     donationTarget: number | null;
     currency: string;
     shopUrl: string;
-    distribution?: { platform: string; campaignUrl: string };
+    distribution?: { platform: string; campaignUrl: string; roundingNote?: string };
     lastUpdated: string | null;
   };
   daily: DailyRecord[];
@@ -178,8 +178,17 @@ export default function Dashboard() {
             <p className="eyebrow"><span>PUBLIC</span> TRANSPARENCY DASHBOARD</p>
             <h1>JOHNSON<br />UNTUK<br /><em>KALIMANTAN</em></h1>
             <p className="hero-message">
-              {donationPercentage}% dari penjualan campaign Johnson dialokasikan untuk Kalimantan.
+              {donationPercentage}% dari penjualan campaign Johnson melalui website dan WhatsApp dialokasikan untuk Kalimantan.
             </p>
+            {metrics.latest?.channels ? (
+              <div className="sales-channels">
+                <p>Penjualan {recordDate(metrics.latest)}</p>
+                <dl>
+                  <div><dt>Website</dt><dd>{rupiah.format(metrics.latest.channels.website)}</dd></div>
+                  <div><dt>WhatsApp</dt><dd>{rupiah.format(metrics.latest.channels.whatsapp)}</dd></div>
+                </dl>
+              </div>
+            ) : null}
           </div>
 
           <div className="total-card" aria-label={`Total donasi terkumpul ${rupiah.format(metrics.totalDonation)}`}>
@@ -343,7 +352,7 @@ export default function Dashboard() {
           <article><span>Total disbursed</span><strong>{rupiah.format(metrics.totalDisbursed)}</strong><small>Sudah disalurkan</small></article>
           <article className="waiting-card"><span>Waiting to be disbursed</span><strong>{rupiah.format(metrics.waiting)}</strong><small>{metrics.totalDonation > 0 && metrics.waiting === 0 ? "Seluruh alokasi tercatat telah disalurkan" : "Menunggu penyaluran"}</small></article>
         </div>
-        {metrics.totalDisbursed > metrics.totalDonation ? <p className="reconciliation-note">Nominal penyaluran {rupiah.format(metrics.totalDisbursed)} melebihi alokasi 10% sebesar {rupiah.format(metrics.totalDisbursed - metrics.totalDonation)}. Total alokasi tetap {rupiah.format(metrics.totalDonation)} sesuai catatan penjualan; selisih tidak menambah angka penjualan.</p> : null}
+        {metrics.totalDisbursed > metrics.totalDonation ? <p className="reconciliation-note">{data.campaign.distribution?.roundingNote ? `${data.campaign.distribution.roundingNote} ` : ""}Nominal penyaluran {rupiah.format(metrics.totalDisbursed)} melebihi alokasi 10% sebesar {rupiah.format(metrics.totalDisbursed - metrics.totalDonation)}. Total alokasi tetap {rupiah.format(metrics.totalDonation)} sesuai catatan penjualan; selisih tidak menambah angka penjualan.</p> : null}
         {data.campaign.distribution ? (
           <aside className="distribution-card" aria-label="Jalur penyaluran donasi">
             <div>

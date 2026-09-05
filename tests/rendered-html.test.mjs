@@ -49,10 +49,9 @@ test("serves the repository campaign data", async () => {
   assert.deepEqual(payload, source);
   assert.equal(payload.campaign.name, "JOHNSON UNTUK KALIMANTAN");
   assert.equal(payload.campaign.donationRate, 0.1);
-  assert.deepEqual(payload.campaign.distribution, {
-    platform: "Kitabisa.com",
-    campaignUrl: "https://kitabisa.com/campaign/patunganjohnsonuntukhutan",
-  });
+  assert.equal(payload.campaign.distribution.platform, "Kitabisa.com");
+  assert.equal(payload.campaign.distribution.campaignUrl, "https://kitabisa.com/campaign/patunganjohnsonuntukhutan");
+  assert.match(payload.campaign.distribution.roundingNote, /dibulatkan ke atas/);
 });
 
 test("publishes the confirmed September 1–4 aggregate without invented orders", async () => {
@@ -60,6 +59,8 @@ test("publishes the confirmed September 1–4 aggregate without invented orders"
   const report = payload.daily.find(row => row.periodStart === "2026-09-01" && row.date === "2026-09-04");
   assert.ok(report);
   assert.equal(report.sales, 27698700);
+  assert.deepEqual(report.channels, { website: 20248700, whatsapp: 7450000 });
+  assert.equal(report.channels.website + report.channels.whatsapp, report.sales);
   assert.equal(report.sales * payload.campaign.donationRate, 2769870);
   assert.equal(report.orders, null);
 });
