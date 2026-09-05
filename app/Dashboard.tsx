@@ -184,8 +184,8 @@ export default function Dashboard() {
               <div className="sales-channels">
                 <p>Penjualan {recordDate(metrics.latest)}</p>
                 <dl>
-                  <div><dt>Website</dt><dd>{rupiah.format(metrics.latest.channels.website)}{metrics.latest.orderChannels ? <small>{integer.format(metrics.latest.orderChannels.website)} order</small> : null}</dd></div>
-                  <div><dt>WhatsApp</dt><dd>{rupiah.format(metrics.latest.channels.whatsapp)}{metrics.latest.orderChannels ? <small>{integer.format(metrics.latest.orderChannels.whatsapp)} order</small> : null}</dd></div>
+                  <div><dt>Website</dt><dd>{rupiah.format(metrics.latest.channels.website)}{metrics.latest.orderChannels ? <small>{integer.format(metrics.latest.orderChannels.website)} order</small> : null}<small>Donasi {donationPercentage}%: {rupiah.format(metrics.latest.channels.website * data.campaign.donationRate)}</small></dd></div>
+                  <div><dt>WhatsApp</dt><dd>{rupiah.format(metrics.latest.channels.whatsapp)}{metrics.latest.orderChannels ? <small>{integer.format(metrics.latest.orderChannels.whatsapp)} order</small> : null}<small>Donasi {donationPercentage}%: {rupiah.format(metrics.latest.channels.whatsapp * data.campaign.donationRate)}</small></dd></div>
                 </dl>
               </div>
             ) : null}

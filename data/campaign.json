@@ -13,7 +13,7 @@
       "campaignUrl": "https://kitabisa.com/campaign/patunganjohnsonuntukhutan",
       "roundingNote": "Menurut penjelasan tim Johnson, nominal penyaluran dibulatkan ke atas agar dapat diproses melalui sistem Kitabisa.com."
     },
-    "lastUpdated": "2026-09-05T16:49:00+07:00"
+    "lastUpdated": "2026-09-05T22:30:14+07:00"
   },
   "daily": [
     {
@@ -23,6 +23,13 @@
       "channels": { "website": 20248700, "whatsapp": 7450000 },
       "orders": 86,
       "orderChannels": { "website": 60, "whatsapp": 26 }
+    },
+    {
+      "date": "2026-09-05",
+      "sales": 2837000,
+      "channels": { "website": 1937000, "whatsapp": 900000 },
+      "orders": 9,
+      "orderChannels": { "website": 7, "whatsapp": 2 }
     }
   ],
   "disbursements": [
@@ -30,7 +37,7 @@
       "date": null,
       "amount": 2770000,
       "recipient": "Patungan Johnson untuk Hutan — Kitabisa.com",
-      "description": "Penyaluran melalui Kitabisa.com dikonfirmasi oleh tim Johnson dengan tangkapan layar campaign yang menampilkan Rp2.770.000. Tanggal transaksi tidak tercantum pada gambar. Bukti ini mencatat penyaluran ke campaign Kitabisa, bukan konfirmasi penerimaan oleh penerima manfaat akhir.",
+      "description": "Penyaluran melalui Kitabisa.com dikonfirmasi oleh tim Johnson dengan tangkapan layar campaign yang menampilkan Rp2.770.000. Alokasi periode 1–4 September sebesar Rp2.769.870 dibulatkan ke atas Rp130 agar dapat diproses melalui Kitabisa, menurut penjelasan tim Johnson. Tanggal transaksi tidak tercantum pada gambar. Bukti ini mencatat penyaluran ke campaign Kitabisa, bukan konfirmasi penerimaan oleh penerima manfaat akhir.",
       "proofUrl": "/proofs/kitabisa-johnson-2770000.jpg",
       "proofImage": { "width": 442, "height": 112, "alt": "Tangkapan layar Patungan Johnson untuk Hutan di Kitabisa dengan nominal Rp2.770.000" }
     }

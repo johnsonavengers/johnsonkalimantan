@@ -74,7 +74,7 @@ test("publishes the supplied Kitabisa proof and reconciles the allocation", asyn
   const proof = payload.disbursements[0];
   assert.equal(proof.amount, 2770000);
   assert.equal(proof.date, null);
-  const allocation = payload.daily.reduce((sum, row) => sum + row.sales, 0) * payload.campaign.donationRate;
+  const allocation = payload.daily.find(row => row.date === "2026-09-04").sales * payload.campaign.donationRate;
   assert.equal(proof.amount - allocation, 130);
   assert.equal(Math.max(allocation - proof.amount, 0), 0);
   const response = await render(proof.proofUrl);
@@ -82,4 +82,22 @@ test("publishes the supplied Kitabisa proof and reconciles the allocation", asyn
   assert.match(response.headers.get("content-type"), /image\/jpeg/);
   const original = await readFile(new URL("../public/proofs/kitabisa-johnson-2770000.jpg", import.meta.url));
   assert.deepEqual(Buffer.from(await response.arrayBuffer()), original);
+});
+
+test("adds September 5 with ten percent per channel without duplicating prior totals", async () => {
+  const payload = await (await render("/api/campaign")).json();
+  const rows = payload.daily.filter(row => row.date === "2026-09-05");
+  assert.equal(rows.length, 1);
+  const report = rows[0];
+  assert.deepEqual(report.channels, { website: 1937000, whatsapp: 900000 });
+  assert.deepEqual(report.orderChannels, { website: 7, whatsapp: 2 });
+  assert.equal(report.sales, 2837000);
+  assert.equal(report.orders, 9);
+  assert.equal(report.channels.website * payload.campaign.donationRate, 193700);
+  assert.equal(report.channels.whatsapp * payload.campaign.donationRate, 90000);
+  const sales = payload.daily.reduce((sum, row) => sum + row.sales, 0);
+  assert.equal(sales, 30535700);
+  assert.equal(payload.daily.reduce((sum, row) => sum + row.orders, 0), 95);
+  assert.equal(sales * payload.campaign.donationRate, 3053570);
+  assert.equal(sales * payload.campaign.donationRate - payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 283570);
 });
