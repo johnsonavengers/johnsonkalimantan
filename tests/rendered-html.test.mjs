@@ -95,9 +95,31 @@ test("adds September 5 with ten percent per channel without duplicating prior to
   assert.equal(report.orders, 9);
   assert.equal(report.channels.website * payload.campaign.donationRate, 193700);
   assert.equal(report.channels.whatsapp * payload.campaign.donationRate, 90000);
-  const sales = payload.daily.reduce((sum, row) => sum + row.sales, 0);
+  const throughSeptember5 = payload.daily.filter(row => row.date <= "2026-09-05");
+  const sales = throughSeptember5.reduce((sum, row) => sum + row.sales, 0);
   assert.equal(sales, 30535700);
-  assert.equal(payload.daily.reduce((sum, row) => sum + row.orders, 0), 95);
+  assert.equal(throughSeptember5.reduce((sum, row) => sum + row.orders, 0), 95);
   assert.equal(sales * payload.campaign.donationRate, 3053570);
   assert.equal(sales * payload.campaign.donationRate - payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 283570);
+});
+
+test("adds September 6 sales and orders with the correct donation totals", async () => {
+  const payload = await (await render("/api/campaign")).json();
+  const rows = payload.daily.filter(row => row.date === "2026-09-06");
+  assert.equal(rows.length, 1);
+  const report = rows[0];
+  assert.deepEqual(report.channels, { website: 7643000, whatsapp: 1300000 });
+  assert.deepEqual(report.orderChannels, { website: 30, whatsapp: 4 });
+  assert.equal(report.sales, 8943000);
+  assert.equal(report.orders, 34);
+  assert.equal(report.channels.website * payload.campaign.donationRate, 764300);
+  assert.equal(report.channels.whatsapp * payload.campaign.donationRate, 130000);
+  assert.equal(report.sales * payload.campaign.donationRate, 894300);
+  const throughSeptember6 = payload.daily.filter(row => row.date <= "2026-09-06");
+  const sales = throughSeptember6.reduce((sum, row) => sum + row.sales, 0);
+  assert.equal(sales, 39478700);
+  assert.equal(throughSeptember6.reduce((sum, row) => sum + row.orders, 0), 129);
+  assert.equal(sales * payload.campaign.donationRate, 3947870);
+  assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
+  assert.equal(sales * payload.campaign.donationRate - 2770000, 1177870);
 });
