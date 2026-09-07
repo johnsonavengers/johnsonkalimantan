@@ -8,6 +8,12 @@ function BrandLogo() {
   return <Image className="brand-logo" src={johnsonLogo} alt="Logo Johnson" width={52} height={52} sizes="52px" />;
 }
 
+function ChannelLink({ channel }: { channel: "website" | "whatsapp" }) {
+  const label = channel === "website" ? "Website" : "WhatsApp";
+  const href = channel === "website" ? "https://johnson.id" : "https://live.johnson.id";
+  return <a className="channel-link" href={href} target="_blank" rel="noopener noreferrer">{label} <span aria-hidden="true">↗</span><span className="sr-only"> (dibuka di tab baru)</span></a>;
+}
+
 type DailyRecord = { date: string; periodStart?: string; sales: number; orders: number | null; channels?: { website: number; whatsapp: number }; orderChannels?: { website: number; whatsapp: number } };
 type Disbursement = {
   date: string | null;
@@ -178,14 +184,14 @@ export default function Dashboard() {
             <p className="eyebrow"><span>PUBLIC</span> TRANSPARENCY DASHBOARD</p>
             <h1>JOHNSON<br />UNTUK<br /><em>KALIMANTAN</em></h1>
             <p className="hero-message">
-              {donationPercentage}% dari penjualan campaign Johnson melalui website dan WhatsApp dialokasikan untuk Kalimantan.
+              {donationPercentage}% dari penjualan campaign Johnson melalui <ChannelLink channel="website" /> dan <ChannelLink channel="whatsapp" /> dialokasikan untuk Kalimantan.
             </p>
             {metrics.latest?.channels ? (
               <div className="sales-channels">
                 <p>Penjualan {recordDate(metrics.latest)}</p>
                 <dl>
-                  <div><dt>Website</dt><dd>{rupiah.format(metrics.latest.channels.website)}{metrics.latest.orderChannels ? <small>{integer.format(metrics.latest.orderChannels.website)} order</small> : null}<small>Donasi {donationPercentage}%: {rupiah.format(metrics.latest.channels.website * data.campaign.donationRate)}</small></dd></div>
-                  <div><dt>WhatsApp</dt><dd>{rupiah.format(metrics.latest.channels.whatsapp)}{metrics.latest.orderChannels ? <small>{integer.format(metrics.latest.orderChannels.whatsapp)} order</small> : null}<small>Donasi {donationPercentage}%: {rupiah.format(metrics.latest.channels.whatsapp * data.campaign.donationRate)}</small></dd></div>
+                  <div><dt><ChannelLink channel="website" /></dt><dd>{rupiah.format(metrics.latest.channels.website)}{metrics.latest.orderChannels ? <small>{integer.format(metrics.latest.orderChannels.website)} order</small> : null}<small>Donasi {donationPercentage}%: {rupiah.format(metrics.latest.channels.website * data.campaign.donationRate)}</small></dd></div>
+                  <div><dt><ChannelLink channel="whatsapp" /></dt><dd>{rupiah.format(metrics.latest.channels.whatsapp)}{metrics.latest.orderChannels ? <small>{integer.format(metrics.latest.orderChannels.whatsapp)} order</small> : null}<small>Donasi {donationPercentage}%: {rupiah.format(metrics.latest.channels.whatsapp * data.campaign.donationRate)}</small></dd></div>
                 </dl>
               </div>
             ) : null}
