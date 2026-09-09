@@ -165,3 +165,24 @@ test("adds September 8 with correct channel and cumulative totals", async () => 
   assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
   assert.equal(sales * payload.campaign.donationRate - 2770000, 1773170);
 });
+
+test("adds September 9 with correct channel and cumulative totals", async () => {
+  const payload = await (await render("/api/campaign")).json();
+  const reports = payload.daily.filter(row => row.date === "2026-09-09");
+  assert.equal(reports.length, 1);
+  const report = reports[0];
+  assert.deepEqual(report.channels, { website: 1616000, whatsapp: 900000 });
+  assert.deepEqual(report.orderChannels, { website: 6, whatsapp: 2 });
+  assert.equal(report.sales, 2516000);
+  assert.equal(report.orders, 8);
+  assert.equal(report.channels.website * payload.campaign.donationRate, 161600);
+  assert.equal(report.channels.whatsapp * payload.campaign.donationRate, 90000);
+  assert.equal(report.sales * payload.campaign.donationRate, 251600);
+  const records = payload.daily.filter(row => row.date <= "2026-09-09");
+  const sales = records.reduce((sum, row) => sum + row.sales, 0);
+  assert.equal(sales, 47947700);
+  assert.equal(records.reduce((sum, row) => sum + row.orders, 0), 154);
+  assert.equal(sales * payload.campaign.donationRate, 4794770);
+  assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
+  assert.equal(sales * payload.campaign.donationRate - 2770000, 2024770);
+});
