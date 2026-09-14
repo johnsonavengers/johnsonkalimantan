@@ -100,7 +100,7 @@ test("adds September 5 with ten percent per channel without duplicating prior to
   assert.equal(sales, 30535700);
   assert.equal(throughSeptember5.reduce((sum, row) => sum + row.orders, 0), 95);
   assert.equal(sales * payload.campaign.donationRate, 3053570);
-  assert.equal(sales * payload.campaign.donationRate - payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 283570);
+  assert.equal(sales * payload.campaign.donationRate - payload.disbursements[0].amount, 283570);
 });
 
 test("adds September 6 sales and orders with the correct donation totals", async () => {
@@ -120,7 +120,7 @@ test("adds September 6 sales and orders with the correct donation totals", async
   assert.equal(sales, 39478700);
   assert.equal(throughSeptember6.reduce((sum, row) => sum + row.orders, 0), 129);
   assert.equal(sales * payload.campaign.donationRate, 3947870);
-  assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
+  assert.equal(payload.disbursements[0].amount, 2770000);
   assert.equal(sales * payload.campaign.donationRate - 2770000, 1177870);
 });
 
@@ -141,7 +141,7 @@ test("adds September 7 with correct channel and cumulative totals", async () => 
   assert.equal(sales, 41986700);
   assert.equal(records.reduce((sum, row) => sum + row.orders, 0), 137);
   assert.equal(sales * payload.campaign.donationRate, 4198670);
-  assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
+  assert.equal(payload.disbursements[0].amount, 2770000);
   assert.equal(sales * payload.campaign.donationRate - 2770000, 1428670);
 });
 
@@ -162,7 +162,7 @@ test("adds September 8 with correct channel and cumulative totals", async () => 
   assert.equal(sales, 45431700);
   assert.equal(records.reduce((sum, row) => sum + row.orders, 0), 146);
   assert.equal(sales * payload.campaign.donationRate, 4543170);
-  assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
+  assert.equal(payload.disbursements[0].amount, 2770000);
   assert.equal(sales * payload.campaign.donationRate - 2770000, 1773170);
 });
 
@@ -183,7 +183,7 @@ test("adds September 9 with correct channel and cumulative totals", async () => 
   assert.equal(sales, 47947700);
   assert.equal(records.reduce((sum, row) => sum + row.orders, 0), 154);
   assert.equal(sales * payload.campaign.donationRate, 4794770);
-  assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
+  assert.equal(payload.disbursements[0].amount, 2770000);
   assert.equal(sales * payload.campaign.donationRate - 2770000, 2024770);
 });
 
@@ -204,7 +204,7 @@ test("adds September 10 with correct channel and cumulative totals", async () =>
   assert.equal(sales, 51240700);
   assert.equal(records.reduce((sum, row) => sum + row.orders, 0), 163);
   assert.equal(sales * payload.campaign.donationRate, 5124070);
-  assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
+  assert.equal(payload.disbursements[0].amount, 2770000);
   assert.equal(sales * payload.campaign.donationRate - 2770000, 2354070);
 });
 
@@ -225,7 +225,7 @@ test("adds September 11 with correct channel and cumulative totals", async () =>
   assert.equal(sales, 52443700);
   assert.equal(records.reduce((sum, row) => sum + row.orders, 0), 168);
   assert.equal(sales * payload.campaign.donationRate, 5244370);
-  assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
+  assert.equal(payload.disbursements[0].amount, 2770000);
   assert.equal(sales * payload.campaign.donationRate - 2770000, 2474370);
 });
 
@@ -246,7 +246,7 @@ test("adds September 12 with correct channel and cumulative totals", async () =>
   assert.equal(sales, 58283700);
   assert.equal(records.reduce((sum, row) => sum + row.orders, 0), 182);
   assert.equal(sales * payload.campaign.donationRate, 5828370);
-  assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
+  assert.equal(payload.disbursements[0].amount, 2770000);
   assert.equal(sales * payload.campaign.donationRate - 2770000, 3058370);
 });
 
@@ -267,6 +267,27 @@ test("adds September 13 with correct channel and cumulative totals", async () =>
   assert.equal(sales, 61593700);
   assert.equal(records.reduce((sum, row) => sum + row.orders, 0), 190);
   assert.equal(sales * payload.campaign.donationRate, 6159370);
-  assert.equal(payload.disbursements.reduce((sum, row) => sum + row.amount, 0), 2770000);
+  assert.equal(payload.disbursements[0].amount, 2770000);
   assert.equal(sales * payload.campaign.donationRate - 2770000, 3389370);
+});
+
+test("publishes the second Kitabisa proof and reconciles both disbursements", async () => {
+  const payload = await (await render("/api/campaign")).json();
+  const proof = payload.disbursements.find(row => row.proofUrl === "/proofs/kitabisa-johnson-3390000.jpg");
+  assert.ok(proof);
+  assert.equal(proof.amount, 3390000);
+  assert.equal(proof.date, null);
+  const periodAllocation = payload.daily.filter(row => row.date >= "2026-09-05" && row.date <= "2026-09-13").reduce((sum, row) => sum + row.sales, 0) * payload.campaign.donationRate;
+  assert.equal(periodAllocation, 3389500);
+  assert.equal(proof.amount - periodAllocation, 500);
+  const total = payload.disbursements.reduce((sum, row) => sum + row.amount, 0);
+  const allocation = payload.daily.reduce((sum, row) => sum + row.sales, 0) * payload.campaign.donationRate;
+  assert.equal(total, 6160000);
+  assert.equal(total - allocation, 630);
+  assert.equal(Math.max(allocation - total, 0), 0);
+  const response = await render(proof.proofUrl);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type"), /image\/jpeg/);
+  const original = await readFile(new URL("../public/proofs/kitabisa-johnson-3390000.jpg", import.meta.url));
+  assert.deepEqual(Buffer.from(await response.arrayBuffer()), original);
 });
