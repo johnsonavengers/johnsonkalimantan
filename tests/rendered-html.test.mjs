@@ -281,7 +281,7 @@ test("publishes the second Kitabisa proof and reconciles both disbursements", as
   assert.equal(periodAllocation, 3389500);
   assert.equal(proof.amount - periodAllocation, 500);
   const total = payload.disbursements.reduce((sum, row) => sum + row.amount, 0);
-  const allocation = payload.daily.reduce((sum, row) => sum + row.sales, 0) * payload.campaign.donationRate;
+  const allocation = payload.daily.filter(row => row.date <= "2026-09-13").reduce((sum, row) => sum + row.sales, 0) * payload.campaign.donationRate;
   assert.equal(total, 6160000);
   assert.equal(total - allocation, 630);
   assert.equal(Math.max(allocation - total, 0), 0);
@@ -290,4 +290,26 @@ test("publishes the second Kitabisa proof and reconciles both disbursements", as
   assert.match(response.headers.get("content-type"), /image\/jpeg/);
   const original = await readFile(new URL("../public/proofs/kitabisa-johnson-3390000.jpg", import.meta.url));
   assert.deepEqual(Buffer.from(await response.arrayBuffer()), original);
+});
+
+test("adds September 14 with correct channel and cumulative totals", async () => {
+  const payload = await (await render("/api/campaign")).json();
+  const reports = payload.daily.filter(row => row.date === "2026-09-14");
+  assert.equal(reports.length, 1);
+  const report = reports[0];
+  assert.deepEqual(report.channels, { website: 2640000, whatsapp: 800000 });
+  assert.deepEqual(report.orderChannels, { website: 7, whatsapp: 2 });
+  assert.equal(report.sales, 3440000);
+  assert.equal(report.orders, 9);
+  assert.equal(report.channels.website * payload.campaign.donationRate, 264000);
+  assert.equal(report.channels.whatsapp * payload.campaign.donationRate, 80000);
+  assert.equal(report.sales * payload.campaign.donationRate, 344000);
+  const records = payload.daily.filter(row => row.date <= "2026-09-14");
+  const sales = records.reduce((sum, row) => sum + row.sales, 0);
+  assert.equal(sales, 65033700);
+  assert.equal(records.reduce((sum, row) => sum + row.orders, 0), 199);
+  assert.equal(sales * payload.campaign.donationRate, 6503370);
+  const disbursed = payload.disbursements.reduce((sum, row) => sum + row.amount, 0);
+  assert.equal(disbursed, 6160000);
+  assert.equal(sales * payload.campaign.donationRate - disbursed, 343370);
 });
