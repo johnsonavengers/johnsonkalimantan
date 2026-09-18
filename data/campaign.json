@@ -13,7 +13,7 @@
       "campaignUrl": "https://kitabisa.com/campaign/patunganjohnsonuntukhutan",
       "roundingNote": "Menurut penjelasan tim Johnson, nominal penyaluran dibulatkan ke atas agar dapat diproses melalui sistem Kitabisa.com."
     },
-    "lastUpdated": "2026-09-16T22:34:12+07:00"
+    "lastUpdated": "2026-09-18T10:50:04+07:00"
   },
   "daily": [
     {
@@ -107,6 +107,13 @@
       "channels": { "website": 1138000, "whatsapp": 0 },
       "orders": 5,
       "orderChannels": { "website": 5, "whatsapp": 0 }
+    },
+    {
+      "date": "2026-09-17",
+      "sales": 2100000,
+      "channels": { "website": 150000, "whatsapp": 1950000 },
+      "orders": 5,
+      "orderChannels": { "website": 1, "whatsapp": 4 }
     }
   ],
   "disbursements": [
