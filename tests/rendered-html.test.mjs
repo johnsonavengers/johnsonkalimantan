@@ -320,6 +320,8 @@ for (const expected of [
   { date: "2026-09-17", website: 150000, whatsapp: 1950000, webOrders: 1, waOrders: 4, sales: 2100000, donation: 210000, cumulativeSales: 69104700, cumulativeOrders: 213, waiting: 750470 },
   { date: "2026-09-18", website: 994000, whatsapp: 550000, webOrders: 4, waOrders: 1, sales: 1544000, donation: 154400, cumulativeSales: 70648700, cumulativeOrders: 218, waiting: 904870 },
   { date: "2026-09-19", website: 260000, whatsapp: 300000, webOrders: 1, waOrders: 1, sales: 560000, donation: 56000, cumulativeSales: 71208700, cumulativeOrders: 220, waiting: 960870 },
+  { date: "2026-09-20", website: 1363000, whatsapp: 400000, webOrders: 5, waOrders: 2, sales: 1763000, donation: 176300, cumulativeSales: 72971700, cumulativeOrders: 227, waiting: 1137170 },
+  { date: "2026-09-21", website: 1510000, whatsapp: 600000, webOrders: 4, waOrders: 2, sales: 2110000, donation: 211000, cumulativeSales: 75081700, cumulativeOrders: 233, waiting: 1348170 },
 ]) {
   test(`publishes ${expected.date} with correct channel and cumulative totals`, async () => {
     const payload = await (await render("/api/campaign")).json();
